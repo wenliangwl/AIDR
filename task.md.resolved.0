@@ -1,0 +1,26 @@
+# AIDR Chatbot - Task Tracker
+
+- [ ] **Project Setup**
+  - [ ] Create project directory structure
+  - [ ] Create `requirements.txt`
+  - [ ] Create `.env` and `.gitignore`
+  - [ ] Install dependencies
+
+- [ ] **Backend (app.py)**
+  - [ ] Flask app scaffolding with session support
+  - [ ] AIDR client initialization
+  - [ ] Multi-provider LLM handlers (OpenAI, Anthropic, Gemini, Ollama)
+  - [ ] Persona system prompts (Customer Support, Security Q&A)
+  - [ ] `/api/chat` endpoint with AIDR input/output guards
+  - [ ] `/api/settings` GET/POST endpoints
+  - [ ] `/api/models` endpoint for dynamic model lists
+
+- [ ] **Frontend**
+  - [ ] `index.html` — Chat page structure with settings panel
+  - [ ] `style.css` — Dark theme, glassmorphism, animations
+  - [ ] `chat.js` — Message handling, settings, provider switching
+
+- [ ] **Verification**
+  - [ ] Start server and test in browser
+  - [ ] Test AIDR blocking with malicious prompts
+  - [ ] Verify settings panel and provider switching

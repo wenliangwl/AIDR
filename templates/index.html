@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot — Protected by CrowdStrike AIDR</title>
+    <meta name="description" content="AI-powered chatbot with CrowdStrike AIDR security guardrails for safe, protected conversations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-persona="customer_support">
+    <!-- Ambient Mesh Background -->
+    <div class="ambient-mesh">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settingsOverlay"></div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Settings
+            </h2>
+            <button class="settings-close" id="settingsClose" aria-label="Close settings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="settings-body">
+            <!-- AIDR Configuration Section -->
+            <div class="settings-section">
+                <div class="settings-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    CrowdStrike AIDR
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label" for="aidrTokenInput">AIDR Token</label>
+                <div class="api-key-wrapper">
+                    <input type="password" id="aidrTokenInput" class="settings-input" placeholder="Enter your AIDR token..." autocomplete="off">
+                    <button class="toggle-key-btn" id="toggleAidrKeyBtn" aria-label="Toggle AIDR token visibility">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label" for="aidrBaseUrlInput">AIDR Base URL</label>
+                <input type="url" id="aidrBaseUrlInput" class="settings-input" placeholder="https://api.us-2.crowdstrike.com/aidr/aiguard" value="https://api.us-2.crowdstrike.com/aidr/aiguard">
+            </div>
+
+            <button class="aidr-connect-btn" id="aidrConnectBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span id="aidrConnectText">Connect AIDR</span>
+            </button>
+            <div class="aidr-connect-status" id="aidrConnectStatus"></div>
+
+            <div class="settings-divider"></div>
+
+            <!-- AI Provider Section -->
+            <div class="settings-section">
+                <div class="settings-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    AI Provider
+                </div>
+            </div>
+
+            <!-- Provider Selection -->
+            <div class="settings-group">
+                <label class="settings-label" for="providerSelect">Provider</label>
+                <select id="providerSelect" class="settings-select">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic (Claude)</option>
+                    <option value="gemini">Google Gemini</option>
+                    <option value="ollama">Ollama (Self-Hosted)</option>
+                </select>
+            </div>
+
+            <!-- API Key -->
+            <div class="settings-group" id="apiKeyGroup">
+                <label class="settings-label" for="apiKeyInput">API Key</label>
+                <div class="api-key-wrapper">
+                    <input type="password" id="apiKeyInput" class="settings-input" placeholder="Enter your API key..." autocomplete="off">
+                    <button class="toggle-key-btn" id="toggleKeyBtn" aria-label="Toggle key visibility">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <span class="settings-hint">Your key is stored in-session only. Never saved to disk.</span>
+            </div>
+
+            <!-- Ollama URL -->
+            <div class="settings-group hidden" id="ollamaUrlGroup">
+                <label class="settings-label" for="ollamaUrlInput">Ollama Server URL</label>
+                <input type="url" id="ollamaUrlInput" class="settings-input" placeholder="http://localhost:11434" value="http://localhost:11434">
+                <span class="settings-hint">URL of your self-hosted Ollama instance.</span>
+            </div>
+
+            <!-- Model Selection -->
+            <div class="settings-group">
+                <label class="settings-label" for="modelSelect">Model</label>
+                <div class="model-select-wrapper">
+                    <select id="modelSelect" class="settings-select">
+                        <option value="gpt-4o-mini">gpt-4o-mini</option>
+                    </select>
+                    <button class="refresh-models-btn" id="refreshModelsBtn" aria-label="Refresh models">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-divider"></div>
+
+            <!-- Persona Selection -->
+            <div class="settings-group">
+                <label class="settings-label" for="personaSelect">Chatbot Persona</label>
+                <select id="personaSelect" class="settings-select">
+                    <option value="customer_support">🎧 Customer Support</option>
+                    <option value="security_qa">🛡️ Security Q&A</option>
+                </select>
+                <span class="settings-hint" id="personaHint">Friendly and professional support agent.</span>
+            </div>
+
+            <!-- Save Button -->
+            <button class="settings-save-btn" id="settingsSaveBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Save Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- App Wrapper for Sidebar + Chat -->
+    <div class="app-wrapper">
+        
+        <!-- Sidebar -->
+        <div class="chat-sidebar" id="chatSidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    New Chat
+                </button>
+                <button class="mobile-sidebar-close" id="mobileSidebarClose">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="sidebar-content" id="sidebarContent">
+                <!-- Chat history will be loaded here via JS -->
+            </div>
+        </div>
+
+        <!-- Main Chat Container -->
+        <div class="chat-container">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-left">
+                <button class="header-btn sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="logo-area">
+                    <div class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>AI Chat</h1>
+                        <span class="persona-badge" id="personaBadge">🎧 Customer Support</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="aidr-badge" id="aidrBadge" title="Toggle CrowdStrike AIDR Protection" aria-pressed="true">
+                    <div class="shield-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <span id="aidrText">AIDR Protected</span>
+                </button>
+                <button class="header-btn" id="clearChatBtn" title="Clear chat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+                <button class="header-btn" id="settingsBtn" title="Settings">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Setup Banner — shown when AIDR token or API key is missing -->
+        <div class="setup-banner" id="setupBanner">
+            <div class="setup-banner-content">
+                <div class="setup-banner-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <div class="setup-banner-text">
+                    <span class="setup-banner-title" id="setupBannerTitle">Setup Required</span>
+                    <span class="setup-banner-desc" id="setupBannerDesc">AIDR token and AI provider API key are not configured.</span>
+                </div>
+                <button class="setup-banner-btn" id="setupBannerBtn">Open Settings</button>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Welcome message -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <h2>Welcome to AI Chat</h2>
+                <p>Your conversations are protected by CrowdStrike AIDR security guardrails.</p>
+                <div class="welcome-cards" id="welcomeCards">
+                    <div class="welcome-card" data-prompt="What are the latest cybersecurity threats I should be aware of?">
+                        <span class="card-icon">🔒</span>
+                        <span>Latest security threats</span>
+                    </div>
+                    <div class="welcome-card" data-prompt="How can I improve my organization's security posture?">
+                        <span class="card-icon">🛡️</span>
+                        <span>Improve security posture</span>
+                    </div>
+                    <div class="welcome-card" data-prompt="Can you help me understand incident response procedures?">
+                        <span class="card-icon">🚨</span>
+                        <span>Incident response</span>
+                    </div>
+                    <div class="welcome-card" data-prompt="What compliance frameworks should my business follow?">
+                        <span class="card-icon">📋</span>
+                        <span>Compliance frameworks</span>
+                    </div>
+                </div>
+                <div class="setup-hint" id="setupHint">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Configure your AI provider in <strong>Settings</strong> to get started.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator hidden" id="typingIndicator">
+            <div class="typing-avatar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </div>
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+            <div class="attachment-preview hidden" id="attachmentPreview">
+                <div class="attachment-content">
+                    <div class="attachment-info">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+                        <span id="attachmentName">filename.txt</span>
+                    </div>
+                    <div class="upload-progress-container hidden" id="uploadProgressContainer">
+                        <div class="upload-progress-bar">
+                            <div class="upload-progress-fill" id="uploadProgressFill"></div>
+                        </div>
+                        <span class="upload-progress-text" id="uploadProgressText">0%</span>
+                    </div>
+                </div>
+                <button class="remove-attachment-btn" id="removeAttachmentBtn" aria-label="Remove attachment">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-wrapper">
+                <button class="upload-btn" id="uploadBtn" aria-label="Upload file">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                </button>
+                <input type="file" id="fileInput" class="hidden-file-input">
+                <textarea
+                    id="chatInput"
+                    placeholder="Type your message..."
+                    rows="1"
+                    autofocus
+                ></textarea>
+                <button class="send-btn" id="sendBtn" disabled aria-label="Send message">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-footer">
+                <span class="provider-indicator" id="providerIndicator">OpenAI · gpt-4o-mini</span>
+                <span class="aidr-indicator">
+                    <span class="aidr-dot"></span>
+                    AIDR Active
+                </span>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

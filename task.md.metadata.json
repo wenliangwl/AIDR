@@ -1,0 +1,6 @@
+{
+  "artifactType": "ARTIFACT_TYPE_TASK",
+  "summary": "Task tracker for AIDR Chatbot. Project setup, backend, and frontend all complete. Dependencies installed with Python 3.13. AIDR SDK API verified and code updated. Server running and UI verified in browser. Remaining: final verification testing.",
+  "updatedAt": "2026-04-15T23:15:21.062583Z",
+  "version": "1"
+}
