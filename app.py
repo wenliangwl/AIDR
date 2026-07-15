@@ -20,7 +20,7 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-key-change-me")
 # ---------------------------------------------------------------------------
 # AIDR identity fields (shown on the AIDR dashboard for each event)
 # ---------------------------------------------------------------------------
-AIDR_APP_ID = os.getenv("AIDR_APP_ID", "AIDR-Demo-Chatbot")
+AIDR_APP_ID = os.getenv("AIDR_APP_ID", "Demo-Chatbot")
 
 def _default_aidr_user_id():
     """Fall back to the local OS username if AIDR_USER_ID isn't set."""
@@ -721,4 +721,5 @@ if __name__ == "__main__":
     print("\n🤖 AIDR Chatbot starting...")
     print(f"🛡️  AIDR Protection: {'ENABLED' if aidr_client else 'DISABLED'}")
     print(f"🌐 http://localhost:5000\n")
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+    //app.run(debug=True, port=5000)
