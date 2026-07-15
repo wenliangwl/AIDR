@@ -6,6 +6,7 @@ Flask backend with CrowdStrike AIDR guardrails and multi-provider LLM support.
 import os
 import json
 import uuid
+import getpass
 import traceback
 from datetime import datetime, timezone
 from flask import Flask, render_template, request, jsonify, session
@@ -15,6 +16,29 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-key-change-me")
+
+# ---------------------------------------------------------------------------
+# AIDR identity fields (shown on the AIDR dashboard for each event)
+# ---------------------------------------------------------------------------
+AIDR_APP_ID = os.getenv("AIDR_APP_ID", "AIDR-Demo-Chatbot")
+
+def _default_aidr_user_id():
+    """Fall back to the local OS username if AIDR_USER_ID isn't set."""
+    try:
+        return getpass.getuser()
+    except Exception:
+        return "aidr-demo-user"
+
+AIDR_USER_ID = os.getenv("AIDR_USER_ID", "").strip() or _default_aidr_user_id()
+
+# Human-readable provider names for the AIDR dashboard's llm_provider field
+PROVIDER_DISPLAY_NAMES = {
+    "openai": "OpenAI",
+    "anthropic": "Anthropic",
+    "gemini": "Google Gemini",
+    "groq": "Groq",
+    "ollama": "Ollama",
+}
 
 # ---------------------------------------------------------------------------
 # AIDR Client Setup
@@ -105,13 +129,14 @@ DEFAULT_MODELS = {
     "openai": ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"],
     "anthropic": ["claude-sonnet-4-20250514", "claude-3-5-haiku-20241022", "claude-3-opus-20240229"],
     "gemini": ["gemma-4-26b-a4b-it", "gemini-3.1-flash-lite-preview"],
+    "groq": ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768", "gemma2-9b-it", "groq/compound", "groq/compound-mini"],
     "ollama": [],  # Fetched dynamically from the Ollama instance
 }
 
 # ---------------------------------------------------------------------------
 # AIDR Guard Helpers
 # ---------------------------------------------------------------------------
-def aidr_guard(messages, event_type):
+def aidr_guard(messages, event_type, model=None, llm_provider=None):
     """
     Run CrowdStrike AIDR guard on messages.
     Returns (is_blocked: bool, details: dict).
@@ -127,10 +152,18 @@ def aidr_guard(messages, event_type):
         return False, {"status": "aidr_unavailable"}
 
     try:
-        response = aidr_client.guard_chat_completions(
-            guard_input={"messages": messages},
-            event_type=event_type,
-        )
+        guard_kwargs = {
+            "guard_input": {"messages": messages},
+            "event_type": event_type,
+            "app_id": AIDR_APP_ID,
+            "user_id": AIDR_USER_ID,
+        }
+        if model:
+            guard_kwargs["model"] = model
+        if llm_provider:
+            guard_kwargs["llm_provider"] = PROVIDER_DISPLAY_NAMES.get(llm_provider, llm_provider)
+
+        response = aidr_client.guard_chat_completions(**guard_kwargs)
 
         # Access the result object
         result = getattr(response, "result", None)
@@ -234,6 +267,18 @@ def call_gemini(messages, api_key, model):
     return response.text
 
 
+def call_groq(messages, api_key, model):
+    """Call Groq's Chat Completions API (OpenAI-compatible)."""
+    from openai import OpenAI
+    client = OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        max_tokens=2048,
+    )
+    return response.choices[0].message.content
+
+
 def call_ollama(messages, ollama_url, model):
     """Call a self-hosted Ollama instance (OpenAI-compatible API)."""
     from openai import OpenAI
@@ -252,6 +297,7 @@ PROVIDERS = {
     "openai": call_openai,
     "anthropic": call_anthropic,
     "gemini": call_gemini,
+    "groq": call_groq,
     "ollama": call_ollama,
 }
 
@@ -430,9 +476,11 @@ def save_settings():
         session["ollama_url"] = data["ollama_url"]
 
     # Clear conversation when settings change
-    sid = session.get("session_id", "")
-    if sid in conversation_store:
-        del conversation_store[sid]
+    active_chat_id = session.get("active_chat_id", "")
+    if active_chat_id in chat_sessions:
+        del chat_sessions[active_chat_id]
+        session.pop("active_chat_id", None)
+        _save_chat_sessions()
 
     return jsonify({"status": "ok"})
 
@@ -562,6 +610,8 @@ def chat():
         input_blocked, input_details = aidr_guard(
             [{"role": "user", "content": user_message}],
             event_type="input",
+            model=model,
+            llm_provider=provider,
         )
 
         if input_blocked:
@@ -603,6 +653,8 @@ def chat():
         output_blocked, output_details = aidr_guard(
             [{"role": "assistant", "content": ai_response}],
             event_type="output",
+            model=model,
+            llm_provider=provider,
         )
 
         if output_blocked:
